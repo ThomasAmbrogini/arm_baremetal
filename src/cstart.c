@@ -1,28 +1,51 @@
 #include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include "uart_pl011.h"
 
-volatile uint8_t *uart0 = (uint8_t*)0x10009000;
+char buf[64];
+uint8_t buf_idx = 0u;
 
-void write(const char *str) {
-    while (*str) {
-        *uart0 = *str++;
+static void parse_cmd(void) {
+    if (!strncmp("help\r", buf, strlen("help\r"))) {
+        uart_write("Just type and see what happens!\n");
+    } else if (!strncmp("uname\r", buf, strlen("uname\r"))) {
+        uart_write("bare-metal arm 06_uart\n");
     }
 }
 
-int fake_main() {
-    const char *s = "Hello world from bare metal!\n";
-    write(s);
-    *uart0 = 'A';
-    *uart0 = 'B';
-    *uart0 = 'C';
-    *uart0 = '\n';
+int main() {
+        uart_config config = {
+            .data_bits = 8,
+            .stop_bits = 1,
+            .parity = false,
+            .baudrate = 9600
+        };
+        uart_configure(&config);
 
-    while(*s != '\0') {
-        *uart0 = *s;
-        s++;
-    }
-    
-    while (1) {};
+        uart_putchar('A');
+        uart_putchar('B');
+        uart_putchar('C');
+        uart_putchar('\n');
 
-    return 0;
+        uart_write("I love drivers!\n");
+        uart_write("Type below...\n");
+
+        while (1) {
+            int error_read;
+            char c;
+            if ((error_read = uart_getchar(&c)) == UART_OK) {
+                uart_putchar(c);
+                buf[buf_idx % 64] = c;
+                buf_idx++;
+                if (c == '\r') {
+                    uart_write("\n");
+                    buf_idx = 0u;
+                    parse_cmd();
+                }
+            } 
+        }
+
+        return 0;
 }
 

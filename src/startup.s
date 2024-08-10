@@ -48,8 +48,8 @@ BssLoop:
     strlt r0, [r1], #4
     blt BssLoop
         
-JumpFakeMain:
-    bl fake_main
+JumpMain:
+    bl main 
     b AbortException 
 
 AbortException:

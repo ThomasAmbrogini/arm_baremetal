@@ -17,10 +17,11 @@ set(CMAKE_OBJCOPY "${COMPILER_BASE_PATH}/arm-none-eabi-objcopy")
 
 set(LINKSCRIPT "${CMAKE_SOURCE_DIR}/src/linkscript.ld")
 set(ASMFILES "${CMAKE_SOURCE_DIR}/src/startup.s")
-set(SRCLIST "${CMAKE_SOURCE_DIR}/src/cstart.c")
+set(SRCLIST "${CMAKE_SOURCE_DIR}/src/cstart.c" 
+    "${CMAKE_SOURCE_DIR}/src/uart_pl011.c")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostartfiles -nostdlib -g -Wall")
-set(CMAKE_EXE_LINKER_FLAGS "-T ${LINKSCRIPT}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostartfiles -g -Wall")
+set(CMAKE_EXE_LINKER_FLAGS "-T ${LINKSCRIPT} -lgcc -lm")
 
 add_custom_target(u-boot 
             COMMAND make vexpress_ca9x4_config ARCH=arm CROSS_COMPILE=/opt/gcc-arm-none-eabi-9.3.1/bin/arm-none-eabi- 

@@ -12,6 +12,7 @@ SECTIONS
     {
         *(.vector_table)
         *(.text)
+        *(.*text*)
         *(.rodata)
         . = ALIGN(4);
     } > ROM
