@@ -10,7 +10,7 @@ SECTIONS
 {
     .text :
     {
-        build/startup.o (.vector_table)
+        *(.vector_table)
         *(.text)
         *(.rodata)
         . = ALIGN(4);
